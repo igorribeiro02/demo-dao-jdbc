@@ -25,7 +25,42 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public void insert(Seller obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+
+		try{
+			st = conn.prepareStatement(
+				"INSERT INTO seller "
+				+"(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+				+"VALUES "
+				+"(?, ?, ?, ?, ?)",
+				java.sql.Statement.RETURN_GENERATED_KEYS); //serve para retornar o id gerado pelo banco de dados, caso a tabela tenha um campo de id auto incrementavel, como é o caso da tabela seller, onde o campo id é auto incrementavel, ou seja, ele é gerado automaticamente pelo banco de dados a cada nova insercao de um vendedor, entao eu preciso retornar esse id para poder associar o vendedor ao departamento, pois o departamento tem um campo de id que é uma chave estrangeira para o campo de id do vendedor, entao eu preciso saber qual é o id do vendedor que foi inserido para poder associar o departamento a esse vendedor
+
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+
+			//serve para executar o comando sql
+			int rowsAffected = st.executeUpdate();
+
+			if (rowsAffected > 0) { // se ele inseriu algum registro, ou seja, se ele afetou alguma linha da tabela, entao ele retorna o id gerado pelo banco de dados, caso contrario, ele lança uma excecao
+				ResultSet rs = st.getGeneratedKeys(); 
+				if (rs.next()) {
+					int id = rs.getInt(1); //primeira coluna das chaves
+					obj.setId(id);
+				}
+				DB.closeResultSet(rs); // ele nao vai excsite no escopo do finally
+			} else {
+				throw new DbException("Unexpected error! No rows affected!");
+			}
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+		}
 		
 	}
 
