@@ -8,7 +8,7 @@ public class DaoFactory {
 	
 	// terá operações 4estaticas
 	//deixa somente a interface e nao expoe o esqueleto
-	public static Seller  createSellerDao() {
+	public static SellerDao  createSellerDao () {
 		
 		return new SellerDaoJDBC(DB.getConnection());
 	}
