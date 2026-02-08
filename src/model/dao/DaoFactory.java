@@ -1,5 +1,6 @@
 package model.dao;
 
+import db.DB;
 import model.dao.impl.SellerDaoJDBC;
 import model.entities.Seller;
 
@@ -9,7 +10,7 @@ public class DaoFactory {
 	//deixa somente a interface e nao expoe o esqueleto
 	public static Seller  createSellerDao() {
 		
-		return new SellerDaoJDBC();
+		return new SellerDaoJDBC(DB.getConnection());
 	}
 
 }
