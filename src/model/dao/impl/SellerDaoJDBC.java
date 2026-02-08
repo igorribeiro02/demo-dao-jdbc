@@ -56,17 +56,9 @@ public class SellerDaoJDBC implements SellerDao{
 			//os objetos serão instanciados a partir do resultado da consulta, usando os dados retornados pelo ResultSet
 			if(rs.next()){ // testa se veio algum resultado
 				//instancia o departamento a partir do resultado da consulta, usando os dados retornados pelo ResultSet
-				Department dep = new  Department();
-				dep.setId(rs.getInt("DepartmentId"));
-				dep.setName(rs.getString("DepName"));
+				Department dep = instantiateDepartment(rs); //instancia o departamento a partir do resultado da consulta, usando os dados retornados pelo ResultSet
 				//instancia o vendedor a partir do resultado da consulta, usando os dados retornados pelo ResultSet e o departamento instanciado anteriormente
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep); //associa o departamento ao vendedor, associa os objetos
+				Seller obj = instantiateSeller(rs, dep); //associa o departamento ao vendedor, associa os objetos
 				return obj; //retorna o vendedor instanciado por id
 			}
 			return null;
@@ -79,6 +71,27 @@ public class SellerDaoJDBC implements SellerDao{
 
 	}
 
+	// cria um metodo auxiliar para instanciar o departamento a partir do resultado da consulta, usando os dados retornados pelo ResultSet
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));
+		dep.setName(rs.getString("DepName"));
+		return dep;
+	}
+
+	//cria um metodo auxiliar para instanciar o vendedor a partir do resultado da consulta, usando os dados retornados pelo ResultSet e o departamento instanciado anteriormente
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
+	}
+
+	
 	@Override
 	public List<Seller> findAll() {
 		// TODO Auto-generated method stub
